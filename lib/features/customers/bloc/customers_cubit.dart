@@ -91,28 +91,33 @@ class CustomersCubit extends Cubit<CustomersState> {
   }
 
   Future<void> _save() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = jsonEncode(_customers.map((e) => e.toMap()).toList());
-    await prefs.setString('customers', data);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final data = jsonEncode(_customers.map((e) => e.toMap()).toList());
+      await prefs.setString('customers', data);
+      print('Saved ${_customers.length} customers to local storage');
+    } catch (e) {
+      print('Error saving customers: $e');
+    }
   }
 
   Future<void> addCustomer(Customer customer) async {
     _customers.add(customer);
     await _save();
-    emit(CustomersLoaded(List.from(_customers)));
+    _emitFiltered();
   }
 
   Future<void> updateCustomer(Customer customer) async {
     _customers =
         _customers.map((c) => c.id == customer.id ? customer : c).toList();
     await _save();
-    emit(CustomersLoaded(List.from(_customers)));
+    _emitFiltered();
   }
 
   Future<void> deleteCustomer(String id) async {
     _customers.removeWhere((c) => c.id == id);
     await _save();
-    emit(CustomersLoaded(List.from(_customers)));
+    _emitFiltered();
   }
 
   Future<List<Map<String, dynamic>>> getLoyaltyLog(String customerId) async {
@@ -144,7 +149,7 @@ class CustomersCubit extends Cubit<CustomersState> {
       _customers[idx] = c.copyWith(loyaltyPoints: c.loyaltyPoints + points);
       await _save();
       await addLoyaltyLog(customerId, 'add', points);
-      emit(CustomersLoaded(List.from(_customers)));
+      _emitFiltered();
     }
   }
 
@@ -156,7 +161,7 @@ class CustomersCubit extends Cubit<CustomersState> {
           loyaltyPoints: (c.loyaltyPoints - points).clamp(0, 999999));
       await _save();
       await addLoyaltyLog(customerId, 'deduct', points);
-      emit(CustomersLoaded(List.from(_customers)));
+      _emitFiltered();
     }
   }
 
@@ -186,6 +191,7 @@ class CustomersCubit extends Cubit<CustomersState> {
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((c) => c.name.contains(_searchQuery)).toList();
     }
+    print('Emitting ${filtered.length} filtered customers');
     emit(CustomersLoaded(filtered));
   }
 }
