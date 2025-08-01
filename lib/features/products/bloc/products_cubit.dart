@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/product.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../../../core/config/api_config.dart';
 part 'products_state.dart';
 
 class ProductsCubit extends Cubit<ProductsState> {
@@ -13,13 +15,34 @@ class ProductsCubit extends Cubit<ProductsState> {
   bool filterLowOnly = false;
 
   Future<void> loadProducts() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = prefs.getString('products');
-    if (data != null) {
-      final List<dynamic> list = jsonDecode(data);
-      _products = list.map((e) => Product.fromMap(e)).toList();
+    try {
+      final url = Uri.parse(ApiConfig.productsEndpoint);
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        _products = data.map((e) => Product.fromMap(e)).toList();
+        await _save();
+        emit(ProductsLoaded(List.from(_products)));
+      } else {
+        // Fallback to local storage
+        final prefs = await SharedPreferences.getInstance();
+        final data = prefs.getString('products');
+        if (data != null) {
+          final List<dynamic> list = jsonDecode(data);
+          _products = list.map((e) => Product.fromMap(e)).toList();
+        }
+        emit(ProductsLoaded(List.from(_products)));
+      }
+    } catch (e) {
+      // Fallback to local storage
+      final prefs = await SharedPreferences.getInstance();
+      final data = prefs.getString('products');
+      if (data != null) {
+        final List<dynamic> list = jsonDecode(data);
+        _products = list.map((e) => Product.fromMap(e)).toList();
+      }
+      emit(ProductsLoaded(List.from(_products)));
     }
-    emit(ProductsLoaded(List.from(_products)));
   }
 
   Future<void> _save() async {

@@ -2,8 +2,8 @@ class ApiConfig {
   // Local development
   static const String localBaseUrl = 'http://10.0.2.2:5000';
 
-  // Railway production (سيتم تحديثه بعد النشر)
-  static const String productionBaseUrl = 'https://your-app-name.railway.app';
+  // Vercel production (سيتم تحديثه بعد النشر)
+  static const String productionBaseUrl = 'https://adargy-pos.vercel.app';
 
   // Current base URL (تغيير هذا حسب البيئة)
   static const String baseUrl = localBaseUrl;

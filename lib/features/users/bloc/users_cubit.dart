@@ -2,6 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../models/user.dart';
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import '../../../core/config/api_config.dart';
 part 'users_state.dart';
 
 class UsersCubit extends Cubit<UsersState> {
@@ -11,13 +13,34 @@ class UsersCubit extends Cubit<UsersState> {
   String _searchQuery = '';
 
   Future<void> loadUsers() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = prefs.getString('users');
-    if (data != null) {
-      final List<dynamic> list = jsonDecode(data);
-      _users = list.map((e) => User.fromMap(e)).toList();
+    try {
+      final url = Uri.parse(ApiConfig.usersEndpoint);
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        _users = data.map((e) => User.fromMap(e)).toList();
+        await _save();
+        emit(UsersLoaded(List.from(_users)));
+      } else {
+        // Fallback to local storage
+        final prefs = await SharedPreferences.getInstance();
+        final data = prefs.getString('users');
+        if (data != null) {
+          final List<dynamic> list = jsonDecode(data);
+          _users = list.map((e) => User.fromMap(e)).toList();
+        }
+        emit(UsersLoaded(List.from(_users)));
+      }
+    } catch (e) {
+      // Fallback to local storage
+      final prefs = await SharedPreferences.getInstance();
+      final data = prefs.getString('users');
+      if (data != null) {
+        final List<dynamic> list = jsonDecode(data);
+        _users = list.map((e) => User.fromMap(e)).toList();
+      }
+      emit(UsersLoaded(List.from(_users)));
     }
-    emit(UsersLoaded(List.from(_users)));
   }
 
   Future<void> _save() async {
