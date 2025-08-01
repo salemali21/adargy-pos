@@ -26,7 +26,7 @@ git push
 
 ### 4. تكوين المشروع
 - **Framework Preset**: `Node.js`
-- **Root Directory**: `backend`
+- **Root Directory**: `./` (المجلد الرئيسي)
 - **Build Command**: `npm install`
 - **Output Directory**: `./`
 - **Install Command**: `npm install`

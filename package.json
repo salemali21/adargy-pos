@@ -1,0 +1,30 @@
+{
+  "name": "adargy-pos",
+  "version": "1.0.0",
+  "description": "Adargy POS System - Flutter Frontend + Node.js Backend",
+  "main": "api/index.js",
+  "engines": {
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0"
+  },
+  "scripts": {
+    "start": "node api/index.js",
+    "dev": "nodemon api/index.js",
+    "build": "echo 'Build completed'",
+    "vercel-build": "echo 'Vercel build completed'"
+  },
+  "keywords": [
+    "pos",
+    "flutter",
+    "nodejs",
+    "express",
+    "vercel"
+  ],
+  "author": "Salem Ali",
+  "license": "MIT"
+} 
