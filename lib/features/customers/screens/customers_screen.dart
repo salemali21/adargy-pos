@@ -47,6 +47,16 @@ class _CustomersScreenState extends State<CustomersScreen> {
         textDirection: ui.TextDirection.rtl,
         child: Scaffold(
           backgroundColor: Colors.transparent,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              await showDialog(
+                context: context,
+                builder: (context) => const AddCustomerDialog(),
+              );
+            },
+            child: const Icon(Icons.add),
+            tooltip: 'إضافة عميل/مورد جديد',
+          ),
           body: Column(
             children: [
               Padding(
