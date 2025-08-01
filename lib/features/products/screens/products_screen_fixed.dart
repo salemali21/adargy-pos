@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/products_cubit.dart';
 import '../models/product.dart';
+import 'package:barcode_widget/barcode_widget.dart';
+import 'package:fl_chart/fl_chart.dart';
+import 'package:printing/printing.dart';
+import 'package:pdf/widgets.dart' as pw;
 import '../../../core/widgets/main_scaffold.dart';
 
 class ProductsScreen extends StatefulWidget {
