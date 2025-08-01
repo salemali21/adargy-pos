@@ -17,38 +17,59 @@ class ProductsCubit extends Cubit<ProductsState> {
   Future<void> loadProducts() async {
     try {
       final url = Uri.parse(ApiConfig.productsEndpoint);
-      final response = await http.get(url);
+      final response = await http.get(url).timeout(
+        const Duration(seconds: 5),
+        onTimeout: () {
+          throw Exception('Connection timeout');
+        },
+      );
       if (response.statusCode == 200) {
         final List<dynamic> data = jsonDecode(response.body);
         _products = data.map((e) => Product.fromMap(e)).toList();
         await _save();
-        emit(ProductsLoaded(List.from(_products)));
+        _emitFiltered();
       } else {
         // Fallback to local storage
-        final prefs = await SharedPreferences.getInstance();
-        final data = prefs.getString('products');
-        if (data != null) {
-          final List<dynamic> list = jsonDecode(data);
-          _products = list.map((e) => Product.fromMap(e)).toList();
-        }
-        emit(ProductsLoaded(List.from(_products)));
+        await _loadFromLocal();
       }
     } catch (e) {
+      print('Error loading products: $e');
       // Fallback to local storage
+      await _loadFromLocal();
+    }
+  }
+
+  Future<void> _loadFromLocal() async {
+    try {
       final prefs = await SharedPreferences.getInstance();
       final data = prefs.getString('products');
-      if (data != null) {
+      if (data != null && data.isNotEmpty) {
         final List<dynamic> list = jsonDecode(data);
         _products = list.map((e) => Product.fromMap(e)).toList();
+        print('Loaded ${_products.length} products from local storage');
+      } else {
+        // Add dummy products if no data exists
+        await addDummyProducts();
+        print('Added ${_products.length} dummy products');
       }
-      emit(ProductsLoaded(List.from(_products)));
+      _emitFiltered();
+    } catch (e) {
+      print('Error loading from local storage: $e');
+      // If all else fails, create empty list
+      _products = [];
+      _emitFiltered();
     }
   }
 
   Future<void> _save() async {
-    final prefs = await SharedPreferences.getInstance();
-    final data = jsonEncode(_products.map((e) => e.toMap()).toList());
-    await prefs.setString('products', data);
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final data = jsonEncode(_products.map((e) => e.toMap()).toList());
+      await prefs.setString('products', data);
+      print('Saved ${_products.length} products to local storage');
+    } catch (e) {
+      print('Error saving products: $e');
+    }
   }
 
   Future<void> addProduct(Product product) async {
@@ -118,7 +139,7 @@ class ProductsCubit extends Cubit<ProductsState> {
       ),
     ];
     await _save();
-    emit(ProductsLoaded(List.from(_products)));
+    _emitFiltered();
   }
 
   void setFilterCategory(String category) {
@@ -147,6 +168,7 @@ class ProductsCubit extends Cubit<ProductsState> {
     if (filterLowOnly) {
       filtered = filtered.where((p) => p.quantity <= p.alertThreshold).toList();
     }
+    print('Emitting ${filtered.length} filtered products');
     emit(ProductsLoaded(filtered));
   }
 }

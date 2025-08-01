@@ -57,6 +57,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
           children: [
             BlocBuilder<ProductsCubit, ProductsState>(
               builder: (context, state) {
+                print(
+                    'Products state: ${state.runtimeType}, products count: ${state is ProductsLoaded ? state.products.length : 0}');
                 if (state is ProductsLoaded && state.products.isEmpty) {
                   return Padding(
                     padding: const EdgeInsets.all(12.0),
