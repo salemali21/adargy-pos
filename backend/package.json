@@ -4,7 +4,8 @@
   "description": "Adargy Backend API",
   "main": "index.js",
   "engines": {
-    "node": ">=16.0.0"
+    "node": ">=16.0.0",
+    "npm": ">=8.0.0"
   },
   "dependencies": {
     "cors": "^2.8.5",
@@ -16,4 +17,4 @@
     "start": "node index.js",
     "dev": "nodemon index.js"
   }
-}
+} 
