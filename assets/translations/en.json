@@ -1,0 +1,23 @@
+{
+  "app_name": "Adargy",
+  "splash_loading": "Loading...",
+  "choose_language": "Choose Language",
+  "arabic": "العربية",
+  "english": "English",
+  "french": "Français",
+  "turkish": "Türkçe",
+  "login": "Login",
+  "register": "Register",
+  "logout": "Logout",
+  "welcome": "Welcome to Adargy!",
+  "dashboard": "Dashboard",
+  "next": "Next",
+  "back": "Back",
+  "username": "Username",
+  "password": "Password",
+  "confirm_password": "Confirm Password",
+  "or": "or",
+  "login_with_fingerprint": "Login with Fingerprint",
+  "login_with_pin": "Login with PIN",
+  "app_description": "Sales and Inventory Management System"
+} 

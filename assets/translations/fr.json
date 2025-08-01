@@ -1,0 +1,23 @@
+{
+  "app_name": "Adargy",
+  "splash_loading": "Chargement...",
+  "choose_language": "Choisir la langue",
+  "arabic": "العربية",
+  "english": "English",
+  "french": "Français",
+  "turkish": "Türkçe",
+  "login": "Connexion",
+  "register": "Créer un compte",
+  "logout": "Déconnexion",
+  "welcome": "Bienvenue sur Adargy!",
+  "dashboard": "Accueil",
+  "next": "Suivant",
+  "back": "Retour",
+  "username": "Nom d'utilisateur",
+  "password": "Mot de passe",
+  "confirm_password": "Confirmer le mot de passe",
+  "or": "ou",
+  "login_with_fingerprint": "Connexion par empreinte",
+  "login_with_pin": "Connexion par code PIN",
+  "app_description": "Système de gestion des ventes et des stocks"
+} 

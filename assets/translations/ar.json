@@ -1,0 +1,23 @@
+{
+  "app_name": "إدارجي",
+  "splash_loading": "جاري التحميل...",
+  "choose_language": "اختر اللغة",
+  "arabic": "العربية",
+  "english": "English",
+  "french": "Français",
+  "turkish": "Türkçe",
+  "login": "تسجيل الدخول",
+  "register": "إنشاء حساب",
+  "logout": "تسجيل الخروج",
+  "welcome": "مرحبًا بك في إدارجي!",
+  "dashboard": "الرئيسية",
+  "next": "التالي",
+  "back": "رجوع",
+  "username": "اسم المستخدم",
+  "password": "كلمة المرور",
+  "confirm_password": "تأكيد كلمة المرور",
+  "or": "أو",
+  "login_with_fingerprint": "تسجيل الدخول بالبصمة",
+  "login_with_pin": "تسجيل الدخول برمز PIN",
+  "app_description": "نظام إدارة المبيعات والمخزون"
+} 

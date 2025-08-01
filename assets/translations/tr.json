@@ -1,0 +1,23 @@
+{
+  "app_name": "Adargy",
+  "splash_loading": "Yükleniyor...",
+  "choose_language": "Dil Seçin",
+  "arabic": "العربية",
+  "english": "English",
+  "french": "Français",
+  "turkish": "Türkçe",
+  "login": "Giriş Yap",
+  "register": "Kayıt Ol",
+  "logout": "Çıkış Yap",
+  "welcome": "Adargy'ye Hoşgeldiniz!",
+  "dashboard": "Ana Sayfa",
+  "next": "İleri",
+  "back": "Geri",
+  "username": "Kullanıcı Adı",
+  "password": "Şifre",
+  "confirm_password": "Şifreyi Onayla",
+  "or": "veya",
+  "login_with_fingerprint": "Parmak İzi ile Giriş",
+  "login_with_pin": "PIN ile Giriş",
+  "app_description": "Satış ve Stok Yönetim Sistemi"
+} 
