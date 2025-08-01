@@ -8,4 +8,7 @@ cmds = ["cd backend && npm install"]
 cmds = ["echo 'Backend built successfully'"]
 
 [start]
-cmd = "cd backend && npm start" 
+cmd = "cd backend && npm start"
+
+[variables]
+NODE_ENV = "production" 
