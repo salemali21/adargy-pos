@@ -143,6 +143,7 @@ class _CustomersScreenState extends State<CustomersScreen> {
                 child: BlocBuilder<CustomersCubit, CustomersState>(
                   builder: (context, state) {
                     if (state is CustomersLoaded) {
+                      print('Customers loaded: ${state.customers.length}');
                       final filtered = state.customers.where((c) {
                         final matchesType =
                             context.select<CustomersCubit, String>(
