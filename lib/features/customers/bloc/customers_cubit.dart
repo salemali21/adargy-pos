@@ -15,15 +15,64 @@ class CustomersCubit extends Cubit<CustomersState> {
   String _searchQuery = '';
 
   Future<void> loadCustomers() async {
-    final url = Uri.parse(ApiConfig.customersEndpoint);
-    final response = await http.get(url);
-    if (response.statusCode == 200) {
-      final List<dynamic> data = jsonDecode(response.body);
-      _customers = data.map((e) => Customer.fromMap(e)).toList();
-      emit(CustomersLoaded(List.from(_customers)));
-    } else {
-      emit(CustomersLoaded([]));
+    try {
+      final url = Uri.parse(ApiConfig.customersEndpoint);
+      final response = await http.get(url);
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        _customers = data.map((e) => Customer.fromMap(e)).toList();
+        await _save();
+        emit(CustomersLoaded(List.from(_customers)));
+      } else {
+        // Fallback to local storage
+        await _loadFromLocal();
+      }
+    } catch (e) {
+      // Fallback to local storage
+      await _loadFromLocal();
     }
+  }
+
+  Future<void> _loadFromLocal() async {
+    final prefs = await SharedPreferences.getInstance();
+    final data = prefs.getString('customers');
+    if (data != null) {
+      final List<dynamic> list = jsonDecode(data);
+      _customers = list.map((e) => Customer.fromMap(e)).toList();
+    } else {
+      // Add dummy customers if no data exists
+      _customers = [
+        Customer(
+          id: '1',
+          name: 'أحمد محمد',
+          type: 'customer',
+          balance: 0.0,
+          phone: '0123456789',
+          category: 'منتظم',
+          loyaltyPoints: 150,
+        ),
+        Customer(
+          id: '2',
+          name: 'فاطمة علي',
+          type: 'supplier',
+          balance: -500.0,
+          phone: '0987654321',
+          category: 'متأخر',
+          loyaltyPoints: 0,
+        ),
+        Customer(
+          id: '3',
+          name: 'محمد أحمد',
+          type: 'customer',
+          balance: 1000.0,
+          phone: '0555555555',
+          category: 'VIP',
+          loyaltyPoints: 500,
+        ),
+      ];
+      await _save();
+    }
+    emit(CustomersLoaded(List.from(_customers)));
   }
 
   Future<void> _save() async {
