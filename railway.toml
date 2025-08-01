@@ -10,4 +10,16 @@ restartPolicyMaxRetries = 10
 
 [[services]]
 name = "adargy-backend"
-sourceDir = "backend" 
+sourceDir = "backend"
+
+[phases.setup]
+nixPkgs = ["nodejs", "npm"]
+
+[phases.install]
+cmds = ["cd backend && npm install"]
+
+[phases.build]
+cmds = ["echo 'Backend built successfully'"]
+
+[start]
+cmd = "cd backend && npm start" 

@@ -2,10 +2,16 @@
 nixPkgs = ["nodejs", "npm"]
 
 [phases.install]
-cmds = ["cd backend && npm install"]
+cmds = [
+  "echo 'Installing backend dependencies...'",
+  "cd backend && npm install"
+]
 
 [phases.build]
-cmds = ["echo 'Backend built successfully'"]
+cmds = [
+  "echo 'Backend built successfully'",
+  "echo 'Ignoring Flutter files...'"
+]
 
 [start]
 cmd = "cd backend && npm start"
