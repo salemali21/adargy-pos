@@ -31,27 +31,13 @@ dependencies:
   fl_chart: ^1.0.0
   url_launcher: ^6.1.7
   pdf: ^3.10.4
-  archive: ^3.6.1
-  characters: ^1.4.0
-  image: ^4.3.0
-  material_color_utilities: ^0.11.1
-  meta: ^1.16.0
-  petitparser: ^6.1.0
-  pointycastle: ^3.9.1
-  vector_math: ^2.1.4
-  xml: ^6.5.0
-  vm_service: ^15.0.0
+  # تم إزالة archive و characters و image و material_color_utilities و meta و petitparser و pointycastle و vector_math و xml و vm_service لتقليل الحجم
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  # flutter_launcher_icons: ^0.13.1  # تم التعليق مؤقتًا لحل تعارض image
   flutter_lints: ^3.0.2
-  leak_tracker: ^10.0.9
-  leak_tracker_flutter_testing: ^3.0.1
-  leak_tracker_testing: ^3.0.1
-  lints: ^3.0.0
-  test_api: ^0.7.4
+  # تم إزالة leak_tracker و lints و test_api لتقليل الحجم
 
 flutter:
   uses-material-design: true
@@ -63,7 +49,7 @@ flutter_launcher_icons:
   android: "launcher_icon"
   ios: true
   image_path: "assets/images/app_icon.png"
-  min_sdk_android: 21
+  min_sdk_android: 21  # تم تخفيضها لدعم Android 5.0+
   web:
     generate: true
     image_path: "assets/images/app_icon.png"

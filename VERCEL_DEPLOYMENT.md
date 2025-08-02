@@ -1,95 +1,79 @@
-# 🚀 نشر Adargy على Vercel (مجاني 100%)
+# 🚀 ربط Adargy بـ Vercel
 
-## 📋 المتطلبات
-- حساب GitHub
-- حساب Vercel (مجاني)
+## الخطوات المطلوبة:
 
-## 🚀 خطوات النشر
+### 1. إنشاء حساب Vercel
+- اذهب إلى [vercel.com](https://vercel.com)
+- سجل حساب جديد أو سجل دخول بـ GitHub
 
-### 1. رفع الكود على GitHub
+### 2. ربط المشروع
 ```bash
-git add .
-git commit -m "Add Vercel deployment configuration"
-git push
+# تثبيت Vercel CLI
+npm i -g vercel
+
+# تسجيل الدخول
+vercel login
+
+# ربط المشروع
+vercel
 ```
 
-### 2. إنشاء حساب Vercel
-1. اذهب إلى [vercel.com](https://vercel.com)
-2. سجل حساب جديد (استخدم GitHub)
-3. مجاني 100% للباك اند
+### 3. إعداد متغيرات البيئة
+في لوحة تحكم Vercel:
+1. اذهب إلى مشروعك
+2. Settings → Environment Variables
+3. أضف:
+   - **Key:** `MONGODB_URI`
+   - **Value:** رابط MongoDB Atlas
+   - **Environments:** Production, Preview, Development
 
-### 3. إنشاء مشروع جديد
-1. اضغط "New Project"
-2. اربط GitHub repository
-3. ابحث عن `salemali21/adargy-pos`
-4. اضغط "Import"
-
-### 4. تكوين المشروع
-- **Framework Preset**: `Node.js`
-- **Root Directory**: `./` (المجلد الرئيسي)
-- **Build Command**: `npm install`
-- **Output Directory**: `./`
-- **Install Command**: `npm install`
-
-### 5. متغيرات البيئة
-أضف هذه المتغيرات:
+### 4. رابط MongoDB Atlas
 ```
-NODE_ENV=production
+mongodb+srv://username:password@cluster0.xxxxx.mongodb.net/adargy?retryWrites=true&w=majority
 ```
 
-### 6. النشر
-- اضغط "Deploy"
-- Vercel سيبني ويشغل التطبيق تلقائياً
+### 5. تحديث Flutter App
+في `lib/core/config/api_config.dart`:
+```dart
+class ApiConfig {
+  static const String baseUrl = 'https://your-app.vercel.app/api';
+  // أو
+  static const String baseUrl = 'https://your-app.vercel.app';
+}
+```
 
-### 7. الحصول على الرابط
-- بعد النشر، ستحصل على رابط مثل:
-  `https://adargy-pos.vercel.app`
-
-## 🔧 اختبار الباك اند
+### 6. اختبار API
 ```bash
-# اختبار Health Check
-curl https://adargy-pos.vercel.app/api/health
+# اختبار الصحة
+curl https://your-app.vercel.app/api/health
 
 # اختبار العملاء
-curl https://adargy-pos.vercel.app/api/customers
+curl https://your-app.vercel.app/api/customers
 
 # اختبار المنتجات
-curl https://adargy-pos.vercel.app/api/products
+curl https://your-app.vercel.app/api/products
 ```
 
-## 🔗 تحديث الفلتر
-في ملف `lib/core/config/api_config.dart`:
-```dart
-// غير هذا
-static const String productionBaseUrl = 'https://your-app-name.railway.app';
+### 7. النشر التلقائي
+- كل push للـ main branch هيتم النشر تلقائياً
+- يمكنك إعداد custom domains
+- SSL مجاني تلقائياً
 
-// إلى الرابط الحقيقي
-static const String productionBaseUrl = 'https://adargy-pos.vercel.app';
-```
+## مميزات Vercel:
+✅ **نشر سريع** - أقل من دقيقة  
+✅ **SSL مجاني** - HTTPS تلقائياً  
+✅ **CDN عالمي** - سرعة عالية  
+✅ **نشر تلقائي** - من GitHub  
+✅ **مقياس تلقائي** - حسب الطلب  
+✅ **لوحة تحكم ممتازة** - إحصائيات مفصلة  
 
-## 💡 مميزات Vercel
-- **مجاني 100%** للباك اند
-- **SSL مجاني** تلقائياً
-- **Auto-deploy** عند كل push
-- **Edge Network** سريع جداً
-- **Logs** مفصلة
-- **Custom domains** مدعومة
-- **Serverless Functions** مدعومة
+## استكشاف الأخطاء:
+- تأكد من صحة رابط MongoDB
+- تحقق من Environment Variables
+- راجع Vercel logs في لوحة التحكم
+- تأكد من أن API يعمل محلياً أولاً
 
-## 🆘 حل المشاكل
-- تحقق من Build Logs في Vercel Dashboard
-- تأكد من أن جميع dependencies مثبتة
-- تحقق من أن vercel.json صحيح
-- تأكد من أن Routes صحيحة
-
-## 📱 تشغيل الفلتر
-```bash
-flutter run
-```
-
-## 🎯 لماذا Vercel؟
-- **مجاني تماماً** - لا حدود على الاستخدام
-- **سريع جداً** - Edge Network
-- **سهل الاستخدام** - واجهة بسيطة
-- **دعم ممتاز** - مجتمع كبير
-- **Auto-deploy** - تلقائي عند كل push 
+## الدعم:
+- [Vercel Docs](https://vercel.com/docs)
+- [Vercel Discord](https://discord.gg/vercel)
+- [GitHub Issues](https://github.com/vercel/vercel/issues) 

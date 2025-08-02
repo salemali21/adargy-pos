@@ -6,7 +6,9 @@ class ApiConfig {
   static const String productionBaseUrl = 'https://adargy-pos.vercel.app';
 
   // Current base URL (تغيير هذا حسب البيئة)
-  static const String baseUrl = localBaseUrl;
+  // للاختبار المحلي: localBaseUrl
+  // للإنتاج: productionBaseUrl
+  static const String baseUrl = productionBaseUrl;
 
   // API Endpoints
   static const String customersEndpoint = '$baseUrl/api/customers';
@@ -21,4 +23,7 @@ class ApiConfig {
 
   // Health check
   static const String healthEndpoint = '$baseUrl/api/health';
+
+  // Root endpoint
+  static const String rootEndpoint = '$baseUrl/';
 }

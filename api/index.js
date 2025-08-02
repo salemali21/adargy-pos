@@ -3,18 +3,38 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 
 const app = express();
-app.use(express.json());
-app.use(cors());
 
-// MongoDB Atlas connection
+// Middleware
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(cors({
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+// MongoDB Atlas connection with better error handling
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/adargy';
 
-mongoose.connect(MONGODB_URI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-})
-.then(() => console.log('✅ Connected to MongoDB Atlas'))
-.catch(err => console.error('❌ MongoDB connection error:', err));
+const connectDB = async () => {
+  try {
+    await mongoose.connect(MONGODB_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 5000,
+      socketTimeoutMS: 45000,
+    });
+    console.log('✅ Connected to MongoDB Atlas');
+  } catch (err) {
+    console.error('❌ MongoDB connection error:', err);
+    // Don't exit in production, let Vercel handle it
+    if (process.env.NODE_ENV !== 'production') {
+      process.exit(1);
+    }
+  }
+};
+
+connectDB();
 
 // Customer Schema
 const customerSchema = new mongoose.Schema({
@@ -59,17 +79,23 @@ const Invoice = mongoose.model('Invoice', invoiceSchema);
 
 // Middleware for error handling
 app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).json({ error: 'Something broke!', message: err.message });
+  console.error('Error:', err.stack);
+  res.status(500).json({ 
+    error: 'Something broke!', 
+    message: err.message,
+    timestamp: new Date().toISOString()
+  });
 });
 
-// Basic routes for testing
+// Health check endpoint
 app.get('/', (req, res) => {
   res.json({
     message: 'Adargy Backend API is running on Vercel with MongoDB',
     status: 'success',
     timestamp: new Date().toISOString(),
-    database: 'MongoDB Atlas'
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    platform: 'Vercel',
+    version: '1.0.0'
   });
 });
 
@@ -79,7 +105,8 @@ app.get('/api/health', (req, res) => {
     uptime: process.uptime(),
     timestamp: new Date().toISOString(),
     platform: 'Vercel',
-    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected'
+    database: mongoose.connection.readyState === 1 ? 'connected' : 'disconnected',
+    memory: process.memoryUsage()
   });
 });
 
@@ -87,10 +114,18 @@ app.get('/api/health', (req, res) => {
 app.get('/api/customers', async (req, res) => {
   try {
     const customers = await Customer.find().sort({ createdAt: -1 });
-    res.json(customers);
+    res.json({
+      success: true,
+      data: customers,
+      count: customers.length
+    });
   } catch (error) {
     console.error('Error fetching customers:', error);
-    res.status(500).json({ error: 'Failed to fetch customers' });
+    res.status(500).json({ 
+      success: false,
+      error: 'Failed to fetch customers',
+      message: error.message 
+    });
   }
 });
 
@@ -98,40 +133,18 @@ app.post('/api/customers', async (req, res) => {
   try {
     const customer = new Customer(req.body);
     await customer.save();
-    res.status(201).json(customer);
+    res.status(201).json({
+      success: true,
+      data: customer,
+      message: 'Customer created successfully'
+    });
   } catch (error) {
     console.error('Error creating customer:', error);
-    res.status(500).json({ error: 'Failed to create customer' });
-  }
-});
-
-app.put('/api/customers/:id', async (req, res) => {
-  try {
-    const customer = await Customer.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!customer) {
-      return res.status(404).json({ error: 'Customer not found' });
-    }
-    res.json(customer);
-  } catch (error) {
-    console.error('Error updating customer:', error);
-    res.status(500).json({ error: 'Failed to update customer' });
-  }
-});
-
-app.delete('/api/customers/:id', async (req, res) => {
-  try {
-    const customer = await Customer.findByIdAndDelete(req.params.id);
-    if (!customer) {
-      return res.status(404).json({ error: 'Customer not found' });
-    }
-    res.json({ message: 'Customer deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting customer:', error);
-    res.status(500).json({ error: 'Failed to delete customer' });
+    res.status(400).json({
+      success: false,
+      error: 'Failed to create customer',
+      message: error.message
+    });
   }
 });
 
@@ -139,10 +152,18 @@ app.delete('/api/customers/:id', async (req, res) => {
 app.get('/api/products', async (req, res) => {
   try {
     const products = await Product.find().sort({ createdAt: -1 });
-    res.json(products);
+    res.json({
+      success: true,
+      data: products,
+      count: products.length
+    });
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).json({ error: 'Failed to fetch products' });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch products',
+      message: error.message
+    });
   }
 });
 
@@ -150,53 +171,37 @@ app.post('/api/products', async (req, res) => {
   try {
     const product = new Product(req.body);
     await product.save();
-    res.status(201).json(product);
+    res.status(201).json({
+      success: true,
+      data: product,
+      message: 'Product created successfully'
+    });
   } catch (error) {
     console.error('Error creating product:', error);
-    res.status(500).json({ error: 'Failed to create product' });
-  }
-});
-
-app.put('/api/products/:id', async (req, res) => {
-  try {
-    const product = await Product.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true }
-    );
-    if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
-    }
-    res.json(product);
-  } catch (error) {
-    console.error('Error updating product:', error);
-    res.status(500).json({ error: 'Failed to update product' });
-  }
-});
-
-app.delete('/api/products/:id', async (req, res) => {
-  try {
-    const product = await Product.findByIdAndDelete(req.params.id);
-    if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
-    }
-    res.json({ message: 'Product deleted successfully' });
-  } catch (error) {
-    console.error('Error deleting product:', error);
-    res.status(500).json({ error: 'Failed to delete product' });
+    res.status(400).json({
+      success: false,
+      error: 'Failed to create product',
+      message: error.message
+    });
   }
 });
 
 // Invoice endpoints
 app.get('/api/invoices', async (req, res) => {
   try {
-    const invoices = await Invoice.find()
-      .populate('customerId', 'name')
-      .sort({ date: -1 });
-    res.json(invoices);
+    const invoices = await Invoice.find().sort({ date: -1 });
+    res.json({
+      success: true,
+      data: invoices,
+      count: invoices.length
+    });
   } catch (error) {
     console.error('Error fetching invoices:', error);
-    res.status(500).json({ error: 'Failed to fetch invoices' });
+    res.status(500).json({
+      success: false,
+      error: 'Failed to fetch invoices',
+      message: error.message
+    });
   }
 });
 
@@ -204,20 +209,27 @@ app.post('/api/invoices', async (req, res) => {
   try {
     const invoice = new Invoice(req.body);
     await invoice.save();
-    res.status(201).json(invoice);
+    res.status(201).json({
+      success: true,
+      data: invoice,
+      message: 'Invoice created successfully'
+    });
   } catch (error) {
     console.error('Error creating invoice:', error);
-    res.status(500).json({ error: 'Failed to create invoice' });
+    res.status(400).json({
+      success: false,
+      error: 'Failed to create invoice',
+      message: error.message
+    });
   }
 });
 
-// Handle all other routes
-app.all('*', (req, res) => {
-  res.json({
-    message: 'Adargy API endpoint',
-    method: req.method,
-    path: req.path,
-    timestamp: new Date().toISOString()
+// Handle 404
+app.use('*', (req, res) => {
+  res.status(404).json({
+    success: false,
+    error: 'Route not found',
+    path: req.originalUrl
   });
 });
 
